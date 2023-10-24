@@ -1,0 +1,23 @@
+#+TITLE: Emacs mode for FLE amateur radio logging files
+
+This is Emacs package intended to support [[https://df3cb.com/fle/][Fast Log Entry]] (FLE) text files. The text format is [[https://df3cb.com/fle/documentation/][documented]] online.  Users can optionally use [[https://github.com/on4kjm/FLEcli][FLEcli]] to process FLE formatted files and upload to the user's preferred destination.
+
+* fle-mode
+
+This provides font-lock highlighting for FLE files and rudimentary support for navigation via [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html#Imenu][Imenu]].
+
+* Installation
+
+You can either clone this repository and add it your ~load-path~ or use something like /Quelpa/ or /Straight/ to add to your configuration.  The following is one example.
+
+#+begin_src emacs-lisp
+(use-package fle-mode
+  :straight (fle-mode :type git :host github :repo "sfromm/fle-mode")
+  :commands (fle-mode))
+#+end_src
+
+* Future goals
+
+- More fine-tuning of regular expressions.
+- Keybindings to facilitate inserting dates and times.
+- Perhaps invoke ~flecli~ from a /fle/ buffer.
