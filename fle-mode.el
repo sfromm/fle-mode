@@ -47,7 +47,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 
 (defcustom fle-mycall nil
   "My callsign for `fle-mode'."
-  :hook 'fle-mode
+  :group 'fle-mode
   :type 'string)
 
 
