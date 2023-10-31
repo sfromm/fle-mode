@@ -148,6 +148,19 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   "Font locking definitions for FLE mode.")
 
 
+;; Mode commands
+
+(defun fle-insert-date ()
+  "Insert today's date in expected format."
+  (interactive)
+  (insert "date " (format-time-string "%Y-%m-%d" (current-time))))
+
+(defun fle-insert-time ()
+  "Insert current time in expected format."
+  (interactive)
+  (insert (format-time-string "%H:%M" (current-time))))
+
+
 ;; Mode setup
 
 (defvar fle-imenu-expression
@@ -165,10 +178,20 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
     st)
   "Syntax table for Arista `fle-mode'.")
 
+(defvar fle-mode-map
+  (let ((map (make-sparse-keymap)))
+    ;; these bindings are a work-in-progress to see what feels right.
+    (define-key map (kbd "C-c C-f d") 'fle-insert-date)
+    (define-key map (kbd "C-c C-f t") 'fle-insert-time)
+    map)
+  "Keymap for fle-mode.")
+
 (define-derived-mode fle-mode text-mode "FLE"
   "Major mode for Fast-Log-Entry (FLE) configuration files."
   :syntax-table fle-mode-syntax-table
   :group 'fle-mode
+  (use-local-map fle-mode-map)
+  (hl-line-mode)
   (set (make-local-variable 'font-lock-defaults) '(fle-font-lock-keywords))
   (set (make-local-variable 'comment-start) "#")
   ;;  (set (make-local-variable 'comment-start-skip) "\\(\\(^\\|[^\\\\\n]\\)\\(\\\\\\\\\\)*\\)!+ *")
