@@ -192,6 +192,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   :group 'fle-mode
   (use-local-map fle-mode-map)
   (hl-line-mode)
+  (display-line-numbers-mode)
   (set (make-local-variable 'font-lock-defaults) '(fle-font-lock-keywords))
   (set (make-local-variable 'comment-start) "#")
   ;;  (set (make-local-variable 'comment-start-skip) "\\(\\(^\\|[^\\\\\n]\\)\\(\\\\\\\\\\)*\\)!+ *")
