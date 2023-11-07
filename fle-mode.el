@@ -158,7 +158,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 (defun fle-insert-time ()
   "Insert current time in expected format."
   (interactive)
-  (insert (format-time-string "%H:%M" (current-time))))
+  (insert (format-time-string "%H%M" (current-time))))
 
 
 ;; Mode setup
