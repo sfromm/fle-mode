@@ -19,5 +19,7 @@ You can either clone this repository and add it your ~load-path~ or use somethin
 * Future goals
 
 - More fine-tuning of regular expressions.
-- Keybindings to facilitate inserting dates and times.
+- +Keybindings to facilitate inserting dates and times.+
+- +Function to query QRZ for a call-sign+
+  + What about other websites?
 - Perhaps invoke ~flecli~ from a /fle/ buffer.
