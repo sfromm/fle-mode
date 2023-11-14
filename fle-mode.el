@@ -55,6 +55,20 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 
 (defconst fle-mode-version "0.1" "Version of `fle-mode'.")
 
+(defconst fle-supported-bands
+  '("2190m" "630m" "560m" "160m" "80m" "60m" "40m" "30m" "20m" "17m" "15m"
+    "12m" "10m" "6m" "4m" "2m" "1.25m" "70cm" "33cm" "23cm" "13cm" "9cm"
+    "6cm" "3cm" "1.25cm" "6mm" "4mm" "25mm" "2mm" "1mm")
+  "Supported bands in FLE.")
+
+(defconst fle-supported-modes
+  '("CW" "SSB" "AM" "FM" "RTTY" "FT8" "PSK" "JT65" "JT9" "FT4" "JS8" "ARDOP"
+    "ATV" "C4FM" "CHIP" "CLO" "CONTESTI" "DIGITALVOICE" "DOMINO" "DSTAR" "FAX"
+    "FSK441" "HELL" "ISCAT" "JT4" "JT6M" "JT44" "MFSK" "MSK144" "MT63" "OLIVIA"
+    "OPERA" "PAC" "PAX" "PKT" "PSK2K" "Q15" "QRA64" "ROS" "RTTYM" "SSTV" "T10"
+    "THOR" "THRB" "TOR" "V4" "VOI" "WINMOR" "WSPR")
+  "Supported modes in FLE.")
+
 (defconst fle-date-regex
   (rx bol (0+ space) "date" space (repeat 4 digit) "-" (repeat 2 digit) "-" (repeat 2 digit))
   "Regular expression for FLE date format.")
@@ -104,28 +118,19 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   (rx "{" (0+ space) (1+ print) (0+ space) "}")
   "Regular expression for alt comment syntax.")
 
-(defconst fle-supported-bands
-  (regexp-opt
-   '("2190m" "630m" "560m" "160m" "80m" "60m" "40m" "30m" "20m" "17m" "15m"
-     "12m" "10m" "6m" "4m" "2m" "1.25m" "70cm" "33cm" "23cm" "13cm" "9cm"
-     "6cm" "3cm" "1.25cm" "6mm" "4mm" "25mm" "2mm" "1mm") 'words)
+(defconst fle-supported-bands-regex
+  (regexp-opt fle-supported-bands 'words)
   "Regular expressions for supported bands in FLE.")
 
-(defconst fle-supported-modes
-  (regexp-opt
-   '("cw" "ssb" "AM" "FM" "RTTY" "FT8" "PSK" "JT65" "JT9" "FT4" "JS8" "ARDOP"
-     "ATV" "C4FM" "CHIP" "CLO" "CONTESTI" "DIGITALVOICE" "DOMINO" "DSTAR" "FAX"
-     "FSK441" "HELL" "ISCAT" "JT4" "JT6M" "JT44" "MFSK" "MSK144" "MT63" "OLIVIA"
-     "OPERA" "PAC" "PAX" "PKT" "PSK2K" "Q15" "QRA64" "ROS" "RTTYM" "SSTV" "T10"
-     "THOR" "THRB" "TOR" "V4" "VOI" "WINMOR" "WSPR") 'words)
+(defconst fle-supported-modes-regex
+  (regexp-opt fle-supported-modes 'words)
   "Regular expressions for supported modes in FLE.")
 
-(defconst fle-supported-headers
+(defconst fle-supported-headers-regex
   (regexp-opt
    '("mycall" "mygrid" "operator" "qslmsg" "syn" "keyword"
      "fle_header" "mywwff" "mysota" "mypota" "nickname") 'words)
   "Regular expressions for FLE headers.")
-
 
 ;; For font-lock faces, see
 ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Faces-for-Font-Lock.html
@@ -134,9 +139,9 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
    (list fle-date-regex 0 font-lock-string-face)
    (list fle-hour-min-regex 0 font-lock-string-face)
    (list fle-frequency-regex 0 font-lock-builtin-face)
-   (list fle-supported-bands 0 font-lock-type-face)
-   (list fle-supported-modes 0 font-lock-type-face)
-   (list fle-supported-headers 0 font-lock-constant-face)
+   (list fle-supported-bands-regex 0 font-lock-type-face)
+   (list fle-supported-modes-regex 0 font-lock-type-face)
+   (list fle-supported-headers-regex 0 font-lock-constant-face)
    (list fle-callsign-regex 0 font-lock-keyword-face)
    (list fle-operator-regex 0 font-lock-string-face)
    (list fle-gridlocator-regex 0 font-lock-builtin-face)
@@ -146,6 +151,10 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
    (list fle-pota-regex 0 font-lock-builtin-face)
    )
   "Font locking definitions for FLE mode.")
+
+(defvar fle-qrz-query-url
+  "https://www.qrz.com/db/"
+  "URL to query QRZ for a call-sign.")
 
 
 ;; Mode commands
@@ -159,6 +168,21 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   "Insert current time in expected format."
   (interactive)
   (insert (format-time-string "%H%M" (current-time))))
+
+(defun fle-insert-mode ()
+  "Insert operating mode."
+  (interactive)
+  (insert (completing-read "Mode: " fle-supported-modes)))
+
+(defun fle-insert-band ()
+  "Insert operating band."
+  (interactive)
+  (insert (completing-read "Band: " fle-supported-bands)))
+
+(defun fle-qrz-query-call ()
+  "Query QRZ for call-sign at point."
+  (interactive)
+  (browse-url (concat fle-qrz-query-url (thing-at-point 'word 'no-properties))))
 
 
 ;; Mode setup
@@ -183,6 +207,9 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
     ;; these bindings are a work-in-progress to see what feels right.
     (define-key map (kbd "C-c C-f d") 'fle-insert-date)
     (define-key map (kbd "C-c C-f t") 'fle-insert-time)
+    (define-key map (kbd "C-c C-f b") 'fle-insert-band)
+    (define-key map (kbd "C-c C-f m") 'fle-insert-mode)
+    (define-key map (kbd "C-c C-f q") 'fle-qrz-query-call)
     map)
   "Keymap for fle-mode.")
 
