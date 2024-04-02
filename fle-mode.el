@@ -158,16 +158,19 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 
 
 ;; Mode commands
+(defun fle-current-time ()
+  "Return UTC time format in lisp object."
+  (encode-time (decode-time nil 0)))
 
 (defun fle-insert-date ()
   "Insert today's date in expected format."
   (interactive)
-  (insert "date " (format-time-string "%Y-%m-%d" (current-time))))
+  (insert "date " (format-time-string "%Y-%m-%d" (fle-current-time))))
 
 (defun fle-insert-time ()
   "Insert current time in expected format."
   (interactive)
-  (insert (format-time-string "%H%M" (current-time))))
+  (insert (format-time-string "%H%M" (fle-current-time))))
 
 (defun fle-insert-mode ()
   "Insert operating mode."
