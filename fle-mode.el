@@ -31,6 +31,9 @@
 ;; - https://www.gnu.org/software/emacs/manual/html_node/elisp/Rx-Constructs.html
 ;; - https://www.gnu.org/software/emacs/manual/html_node/elisp/Faces-for-Font-Lock.html
 
+;; How to install with package-vc-install
+;; (package-vc-install "https://github.com/sfromm/fle-mode")
+
 ;;; Code:
 
 (require 'rx)
@@ -53,7 +56,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 
 ;; Constants
 
-(defconst fle-mode-version "0.2" "Version of `fle-mode'.")
+(defconst fle-mode-version "0.3" "Version of `fle-mode'.")
 
 (defconst fle-supported-bands
   '("2190m" "630m" "560m" "160m" "80m" "60m" "40m" "30m" "20m" "17m" "15m"
