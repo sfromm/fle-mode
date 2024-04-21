@@ -158,19 +158,23 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 
 
 ;; Mode commands
-(defun fle-current-time ()
-  "Return UTC time format in lisp object."
-  (encode-time (decode-time nil 0)))
+(defun fle-find-mypota ()
+  "Find POTA park identifier and save in buffer variable."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward "^mypota ")
+    (setq fle-mypota (thing-at-point 'symbol 'no-properties))))
 
 (defun fle-insert-date ()
   "Insert today's date in expected format."
   (interactive)
-  (insert "date " (format-time-string "%Y-%m-%d" (fle-current-time))))
+  (insert "date " (format-time-string "%Y-%m-%d" (current-time) t)))
 
 (defun fle-insert-time ()
   "Insert current time in expected format."
   (interactive)
-  (insert (format-time-string "%H%M" (fle-current-time))))
+  (insert (format-time-string "%H%M" (current-time) t)))
 
 (defun fle-insert-mode ()
   "Insert operating mode."
@@ -186,6 +190,24 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   "Query QRZ for call-sign at point."
   (interactive)
   (browse-url (concat fle-qrz-query-url (thing-at-point 'word 'no-properties))))
+
+(defun fle-insert-mypota ()
+  "Insert POTA Park identifier if not already set."
+  (interactive)
+  (if (not fle-mypota)
+      (insert "mypota " (read-string "POTA: ") "\n")))
+
+(defun fle-comment-pota-logfile-name ()
+  "Insert comment with POTA log file name."
+  (interactive)
+  (insert
+   (concat "# "
+           fle-mycall
+           "@"
+           fle-mypota
+           "_"
+           (format-time-string "%Y%m%d" (current-time) t)
+           "\n")))
 
 
 ;; Mode setup
@@ -227,8 +249,10 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   (set (make-local-variable 'comment-start) "#")
   ;;  (set (make-local-variable 'comment-start-skip) "\\(\\(^\\|[^\\\\\n]\\)\\(\\\\\\\\\\)*\\)!+ *")
   (set (make-local-variable 'indent-tabs-mode) nil)
+  (set (make-local-variable 'fle-mypota) nil)
   (setq imenu-case-fold-search nil)
   (set (make-local-variable 'imenu-generic-expression) fle-imenu-expression)
+  (fle-find-mypota)
   (imenu-add-to-menubar "Imenu"))
 
 (defun fle-mode-version ()
