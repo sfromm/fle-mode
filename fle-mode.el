@@ -6,7 +6,7 @@
 ;; URL: https://github.com/sfromm/fle-mode
 ;; Package-Requires: ((emacs "24.1"))
 ;; Keywords: fle
-;; Version: 0.2
+;; Version: 0.3
 
 ;; This program is not part of GNU Emacs
 ;;
@@ -166,8 +166,8 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   (interactive)
   (save-excursion
     (goto-char (point-min))
-    (re-search-forward "^mypota ")
-    (setq fle-mypota (thing-at-point 'symbol 'no-properties))))
+    (if (re-search-forward "^mypota " nil t)
+        (setq fle-mypota (thing-at-point 'symbol 'no-properties)))))
 
 (defun fle-insert-date ()
   "Insert today's date in expected format."
@@ -197,8 +197,13 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 (defun fle-insert-mypota ()
   "Insert POTA Park identifier if not already set."
   (interactive)
-  (if (not fle-mypota)
-      (insert "mypota " (read-string "POTA: ") "\n")))
+  (save-excursion
+    (goto-char (point-min))
+    (when (re-search-forward "^mypota " nil t)
+      (beginning-of-line)
+      (kill-line))
+    (setq fle-mypota (read-string "POTA: "))
+    (insert "mypota " fle-mypota "\n")))
 
 (defun fle-comment-pota-logfile-name ()
   "Insert comment with POTA log file name."
@@ -230,6 +235,14 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
     st)
   "Syntax table for Arista `fle-mode'.")
 
+(defvar fle-mode-pota-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "p") 'fle-insert-mypota)
+    (define-key map (kbd "n") 'fle-comment-pota-logfile-name)
+    map)
+  "Submap for POTA-related commands")
+(fset 'fle-mode-pota-map fle-mode-pota-map)
+
 (defvar fle-mode-map
   (let ((map (make-sparse-keymap)))
     ;; these bindings are a work-in-progress to see what feels right.
@@ -238,6 +251,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
     (define-key map (kbd "C-c C-f b") 'fle-insert-band)
     (define-key map (kbd "C-c C-f m") 'fle-insert-mode)
     (define-key map (kbd "C-c C-f q") 'fle-qrz-query-call)
+    (define-key map (kbd "C-c C-f p") 'fle-mode-pota-map)
     map)
   "Keymap for fle-mode.")
 
@@ -250,7 +264,6 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   (display-line-numbers-mode)
   (set (make-local-variable 'font-lock-defaults) '(fle-font-lock-keywords))
   (set (make-local-variable 'comment-start) "#")
-  ;;  (set (make-local-variable 'comment-start-skip) "\\(\\(^\\|[^\\\\\n]\\)\\(\\\\\\\\\\)*\\)!+ *")
   (set (make-local-variable 'indent-tabs-mode) nil)
   (set (make-local-variable 'fle-mypota) nil)
   (setq imenu-case-fold-search nil)

@@ -16,6 +16,25 @@ You can either clone this repository and add it your ~load-path~ or use somethin
   :commands (fle-mode))
 #+end_src
 
+* FLE keywords
+The following is not intended to replace the [[https://df3cb.com/fle/documentation/][documentation]] maintained by DF3CB.
+
+** Header section
+- *mycall*
+- *mygrid*
+- *operator*
+- *qslmsg*
+- *mywwff*
+- *mysota*
+- *mypota*
+- *nickname*
+** Optional information
+- QSO comments must be embedded in brackets =< >=.
+- The QSO partner's name must have a preceding =@=.
+- Grid locators must have a preceding =#=.
+- QSL messages must be embedded in square brackets =[ ]=.
+- Remarks can be embedded in curly braces ={ }=.  Remarks are not exported to ADIF.
+- Remarks  can also be set in lines that begin with a =#=.
 * Future goals
 
 - More fine-tuning of regular expressions.
@@ -23,3 +42,4 @@ You can either clone this repository and add it your ~load-path~ or use somethin
 - +Function to query QRZ for a call-sign+
   + What about other websites?
 - Perhaps invoke ~flecli~ from a /fle/ buffer.
+
