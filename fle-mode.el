@@ -217,6 +217,44 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
            (format-time-string "%Y%m%d" (current-time) t)
            "\n")))
 
+(defun fle-get-log-path ()
+  "Return path of FLE log, whether an Org Src block or actual file."
+  (expand-file-name
+   (if (org-in-src-block-p)
+       (cdr (assq :tangle (caddr (org-babel-get-src-block-info))))
+     (buffer-file-name))))
+
+(defun fle-flecli-load ()
+  "Load and validate a FLE log with FLEcli."
+  (interactive)
+  (unless (executable-find "FLEcli")
+    (error "Missing FLEcli."))
+  (let* ((path (fle-get-log-path))
+         (default-directory (file-name-directory path))
+         (flecli (executable-find "FLEcli")))
+    (shell-command (concat flecli " load " path))))
+
+(defun fle-flecli-gen-adif ()
+  "Invoke flecli on FLE log."
+  (interactive)
+  (unless (executable-find "FLEcli")
+    (error "Missing FLEcli."))
+  (let* ((path (fle-get-log-path))
+         (default-directory (file-name-directory path))
+         (flecli (executable-find "FLEcli")))
+    (shell-command (concat flecli " adif -i --overwrite " path))))
+
+
+(defun fle-flecli-gen-adif-pota ()
+  "Invoke flecli on FLE log."
+  (interactive)
+  (unless (executable-find "FLEcli")
+    (error "Missing FLEcli."))
+  (let* ((path (fle-get-log-path))
+         (default-directory (file-name-directory path))
+         (flecli (executable-find "FLEcli")))
+    (shell-command (concat flecli " adif -i --overwrite --pota " path))))
+
 
 ;; Mode setup
 
