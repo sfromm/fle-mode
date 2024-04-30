@@ -147,7 +147,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
    (list fle-supported-headers-regex 0 font-lock-constant-face)
    (list fle-callsign-regex 0 font-lock-keyword-face)
    (list fle-operator-regex 0 font-lock-string-face)
-   (list fle-gridlocator-regex 0 font-lock-builtin-face)
+   (list fle-gridlocator-regex 0 font-lock-string-face)
    (list fle-remark-regex 0 font-lock-string-face)
    (list fle-comment-regex 0 font-lock-comment-face)
    (list fle-sota-regex 0 font-lock-builtin-face)
@@ -155,12 +155,24 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
    )
   "Font locking definitions for FLE mode.")
 
+(defvar fle-messages
+  "*FLE-Messages*"
+  "Buffer for FLE and FLEcli messages.")
+
 (defvar fle-qrz-query-url
   "https://www.qrz.com/db/"
   "URL to query QRZ for a call-sign.")
 
 
 ;; Mode commands
+(defun fle-find-mygrid ()
+  "Find POTA park identifier and save in buffer variable."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (if (re-search-forward "^mygrid " nil t)
+        (setq fle-mygrid (thing-at-point 'symbol 'no-properties)))))
+
 (defun fle-find-mypota ()
   "Find POTA park identifier and save in buffer variable."
   (interactive)
@@ -224,6 +236,13 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
        (cdr (assq :tangle (caddr (org-babel-get-src-block-info))))
      (buffer-file-name))))
 
+
+;;; Integration with FLEcli
+
+(defun fle-flecli-run-command (cmd)
+  "Run FLEcli command CMD."
+  (shell-command cmd fle-messages))
+
 (defun fle-flecli-load ()
   "Load and validate a FLE log with FLEcli."
   (interactive)
@@ -232,7 +251,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   (let* ((path (fle-get-log-path))
          (default-directory (file-name-directory path))
          (flecli (executable-find "FLEcli")))
-    (shell-command (concat flecli " load " path))))
+    (fle-flecli-run-command (concat flecli " load " path))))
 
 (defun fle-flecli-gen-adif ()
   "Invoke flecli on FLE log."
@@ -242,8 +261,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   (let* ((path (fle-get-log-path))
          (default-directory (file-name-directory path))
          (flecli (executable-find "FLEcli")))
-    (shell-command (concat flecli " adif -i --overwrite " path))))
-
+    (fle-flecli-run-command (concat flecli " adif -i --overwrite " path))))
 
 (defun fle-flecli-gen-adif-pota ()
   "Invoke flecli on FLE log."
@@ -253,7 +271,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   (let* ((path (fle-get-log-path))
          (default-directory (file-name-directory path))
          (flecli (executable-find "FLEcli")))
-    (shell-command (concat flecli " adif -i --overwrite --pota " path))))
+    (fle-flecli-run-command (concat flecli " adif -i --overwrite --pota " path))))
 
 
 ;; Mode setup
@@ -267,7 +285,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 
 (defvar fle-mode-syntax-table
   (let ((st (make-syntax-table)))
-    (modify-syntax-entry ?# "<" st)  ;; All !'s start comments.
+    (modify-syntax-entry ?# "<" st)  ;; All #'s start comments.
     (modify-syntax-entry ?\n ">" st) ;; All newlines end comments.
     (modify-syntax-entry ?\r ">" st) ;; All linefeeds end comments.
     st)
@@ -300,9 +318,10 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   (use-local-map fle-mode-map)
   (hl-line-mode)
   (display-line-numbers-mode)
+  (set (make-local-variable 'comment-start) "# ")
   (set (make-local-variable 'font-lock-defaults) '(fle-font-lock-keywords))
-  (set (make-local-variable 'comment-start) "#")
   (set (make-local-variable 'indent-tabs-mode) nil)
+  (set (make-local-variable 'fle-mygrid) nil)
   (set (make-local-variable 'fle-mypota) nil)
   (setq imenu-case-fold-search nil)
   (set (make-local-variable 'imenu-generic-expression) fle-imenu-expression)
