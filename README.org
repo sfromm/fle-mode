@@ -16,7 +16,43 @@ You can either clone this repository and add it your ~load-path~ or use somethin
   :commands (fle-mode))
 #+end_src
 
+* Workflows
+
+This is currently intended to be a way to support logging of amateur radio contacts and generating
+[[https://adif.org/][ADIF]] (Amateur Data Interchange Format) logs that can be submitted to online log-books.
+
+- Create a new file and set the mode as *FLE*.  You can invoke =M-x fle-mode= or add file local variables and define the mode: ~-*- mode: fle; -*-~.
+- Create a FLE source block in an Org buffer:
+  #+begin_example
+  #+begin_src fle
+  #+end_src
+  #+end_example
+- Test the log file before generating an ADIF file with =M-x fle-flecli-load=.
+- When done logging, invoke =M-x fle-flecli-gen-adif= or =M-x fle-flecli-gen-adif-pota= to generate an ADIF log.
+  + If you are keeping the log in a source block in an Org buffer, be sure to use the =:tangle= header so the contents are tangled to a file.
+
+* Supported features and commands
+
+- Syntax highlighting
+- [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html][Imenu]] support for Date and Band sections.
+- Query QRZ for information on callsign.
+- Completing read support for band and mode.
+- Commands and Keybindings to insert date and time in UTC.
+
+** Keybinding map
+
+| Keybinding  | Command                       |
+|-------------+-------------------------------|
+| C-c C-f d   | fle-insert-date               |
+| C-c C-f t   | fle-insert-time               |
+| C-c C-f b   | fle-insert-band               |
+| C-c C-f m   | fle-insert-mode               |
+| C-c C-f q   | fle-qrz-query-call            |
+| C-C C-f p p | fle-insert-mypota             |
+| C-C C-f p n | fle-comment-pota-logfile-name |
+
 * FLE keywords
+
 The following is not intended to replace the [[https://df3cb.com/fle/documentation/][documentation]] maintained by DF3CB.
 
 ** Header section
@@ -42,5 +78,5 @@ The following is not intended to replace the [[https://df3cb.com/fle/documentati
 - +Function to query QRZ for a call-sign+
   + What about a query that puts results in an Emacs buffer
   + What about other websites?
-- Perhaps invoke ~flecli~ from a /fle/ buffer.
+- +Perhaps invoke ~flecli~ from a /fle/ buffer.+
 
