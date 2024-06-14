@@ -143,19 +143,21 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Faces-for-Font-Lock.html
 (defvar fle-font-lock-keywords
   (list
+   (list fle-comment-regex 0 font-lock-comment-face)
    (list fle-date-regex 0 font-lock-string-face)
    (list fle-hour-min-regex 0 font-lock-string-face)
    (list fle-frequency-regex 0 font-lock-builtin-face)
    (list fle-supported-bands-regex 0 font-lock-type-face)
    (list fle-supported-modes-regex 0 font-lock-type-face)
    (list fle-supported-headers-regex 0 font-lock-constant-face)
+   (list fle-gridlocator-regex 0 font-lock-type-face)
    (list fle-callsign-regex 0 font-lock-keyword-face)
    (list fle-operator-regex 0 font-lock-string-face)
-   (list fle-gridlocator-regex 0 font-lock-string-face)
-   (list fle-remark-regex 0 font-lock-string-face)
-   (list fle-comment-regex 0 font-lock-comment-face)
+   (list fle-qso-comment-regex 0 font-lock-string-face)
+   (list fle-qso-remark-regex 0 font-lock-comment-face)
    (list fle-sota-regex 0 font-lock-builtin-face)
    (list fle-pota-regex 0 font-lock-builtin-face)
+   ()
    )
   "Font locking definitions for FLE mode.")
 
