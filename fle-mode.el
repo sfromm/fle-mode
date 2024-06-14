@@ -169,6 +169,10 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   "https://www.qrz.com/db/"
   "URL to query QRZ for a call-sign.")
 
+(defvar fle-pota-park-url
+  "https://pota.app/#/park/"
+  "URL to query QRZ for a call-sign.")
+
 
 ;; Mode commands
 (defun fle-find-mygrid ()
@@ -222,6 +226,11 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
       (kill-line))
     (setq fle-mypota (read-string "POTA: "))
     (insert "mypota " fle-mypota "\n")))
+
+(defun fle-pota-query-park ()
+  "Query POTA for park information."
+  (interactive)
+  (browse-url (concat fle-pota-park-url (thing-at-point 'symbol 'no-properties))))
 
 (defun fle-comment-pota-logfile-name ()
   "Insert comment with POTA log file name."
