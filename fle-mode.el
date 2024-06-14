@@ -6,7 +6,7 @@
 ;; URL: https://github.com/sfromm/fle-mode
 ;; Package-Requires: ((emacs "24.1"))
 ;; Keywords: fle
-;; Version: 0.3
+;; Version: 0.4
 
 ;; This program is not part of GNU Emacs
 ;;
@@ -56,7 +56,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 
 ;; Constants
 
-(defconst fle-mode-version "0.3" "Version of `fle-mode'.")
+(defconst fle-mode-version "0.4" "Version of `fle-mode'.")
 
 (defconst fle-supported-bands
   '("2190m" "630m" "560m" "160m" "80m" "60m" "40m" "30m" "20m" "17m" "15m"

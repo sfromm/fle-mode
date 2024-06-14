@@ -69,7 +69,7 @@ The following is not intended to replace the [[https://df3cb.com/fle/documentati
 - The QSO partner's name must have a preceding =@=.
 - Grid locators must have a preceding =#=.
 - QSL messages must be embedded in square brackets =[ ]=.
-- Remarks can be embedded in curly braces ={ }=.  Remarks are not exported to ADIF.
+- Remarks can be embedded in curly braces ={ }=.  /Remarks are not exported to ADIF/.
 - Remarks  can also be set in lines that begin with a =#=.
 * Future goals
 
