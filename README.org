@@ -16,21 +16,6 @@ You can either clone this repository and add it your ~load-path~ or use somethin
   :commands (fle-mode))
 #+end_src
 
-* Workflows
-
-This is currently intended to be a way to support logging of amateur radio contacts and generating
-[[https://adif.org/][ADIF]] (Amateur Data Interchange Format) logs that can be submitted to online log-books.
-
-- Create a new file and set the mode as *FLE*.  You can invoke =M-x fle-mode= or add file local variables and define the mode: ~-*- mode: fle; -*-~.
-- Create a FLE source block in an Org buffer:
-  #+begin_example
-  #+begin_src fle
-  #+end_src
-  #+end_example
-- Test the log file before generating an ADIF file with =M-x fle-flecli-load=.
-- When done logging, invoke =M-x fle-flecli-gen-adif= or =M-x fle-flecli-gen-adif-pota= to generate an ADIF log.
-  + If you are keeping the log in a source block in an Org buffer, be sure to use the =:tangle= header so the contents are tangled to a file.
-
 * Supported features and commands
 
 - Syntax highlighting
@@ -50,6 +35,21 @@ This is currently intended to be a way to support logging of amateur radio conta
 | C-c C-f q   | fle-qrz-query-call            |
 | C-C C-f p p | fle-insert-mypota             |
 | C-C C-f p n | fle-comment-pota-logfile-name |
+
+* Workflows
+
+This is currently intended to be a way to support logging of amateur radio contacts and generating
+[[https://adif.org/][ADIF]] (Amateur Data Interchange Format) logs that can be submitted to online log-books.
+
+- Create a new file and set the mode as *FLE*.  You can invoke =M-x fle-mode= or add file local variables and define the mode: ~-*- mode: fle; -*-~.
+- Create a FLE source block in an Org buffer:
+  #+begin_example
+  #+begin_src fle
+  #+end_src
+  #+end_example
+- Test the log file before generating an ADIF file with =M-x fle-flecli-load=.
+- When done logging, invoke =M-x fle-flecli-gen-adif= or =M-x fle-flecli-gen-adif-pota= to generate an ADIF log.
+  + If you are keeping the log in a source block in an Org buffer, be sure to use the =:tangle= header so the contents are tangled to a file.
 
 * FLE keywords
 
