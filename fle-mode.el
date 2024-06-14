@@ -291,7 +291,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 
 (defvar fle-mode-syntax-table
   (let ((st (make-syntax-table)))
-    (modify-syntax-entry ?# "<" st)  ;; All #'s start comments.
+    ;; (modify-syntax-entry ?# "<" st)  ;; All #'s start comments.
     (modify-syntax-entry ?\n ">" st) ;; All newlines end comments.
     (modify-syntax-entry ?\r ">" st) ;; All linefeeds end comments.
     st)
