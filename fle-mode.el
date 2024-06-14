@@ -110,16 +110,20 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 
 ;; example DA-1234
 (defconst fle-pota-regex
-  (rx (repeat 1 3 alnum) "-" (repeat 4 digit))
+  (rx (repeat 1 3 alnum) "-" (repeat 4 5 digit))
   "Regular expression for POTA park ID.")
 
-(defconst fle-remark-regex
+(defconst fle-qso-comment-regex
   (rx "<" (0+ space) (1+ print) (0+ space) ">")
-  "Regular expression for remark/comment syntax.")
+  "Regular expression for QSO comment syntax.")
+
+(defconst fle-qso-remark-regex
+  (rx "{" (0+ space) (1+ print) (0+ space) "}")
+  "Regular expression for QSO remark syntax.")
 
 (defconst fle-comment-regex
-  (rx "{" (0+ space) (1+ print) (0+ space) "}")
-  "Regular expression for alt comment syntax.")
+  (rx bol "#" (0+ print))
+  "Regular expression for syntax commenting a line.")
 
 (defconst fle-supported-bands-regex
   (regexp-opt fle-supported-bands 'words)
