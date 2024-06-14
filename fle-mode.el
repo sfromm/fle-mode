@@ -100,7 +100,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 
 ;; example #JN49
 (defconst fle-gridlocator-regex
-  (rx "#" (group (1+ alnum)))
+  (rx (zero-or-one "#")  (repeat 2 alpha) (repeat 2 digit) (repeat 0 2 alnum))
   "Regular expression for grid locator.")
 
 ;; example w6/ct-226
