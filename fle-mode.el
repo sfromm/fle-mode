@@ -260,7 +260,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
     (fle-flecli-run-command (concat flecli " load " path))))
 
 (defun fle-flecli-gen-adif ()
-  "Invoke flecli on FLE log."
+  "Invoke flecli on FLE log to generate an ADIF log."
   (interactive)
   (unless (executable-find "FLEcli")
     (error "Missing FLEcli."))
@@ -270,7 +270,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
     (fle-flecli-run-command (concat flecli " adif -i --overwrite " path))))
 
 (defun fle-flecli-gen-adif-pota ()
-  "Invoke flecli on FLE log."
+  "Invoke flecli on FLE log to generate an ADIF log for POTA."
   (interactive)
   (unless (executable-find "FLEcli")
     (error "Missing FLEcli."))
