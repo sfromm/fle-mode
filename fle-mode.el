@@ -1,6 +1,6 @@
 ;;; fle-mode.el --- edit FLE amatuer radio logging files -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023 Stephen Fromm
+;; Copyright (C) 2023, 2024 Stephen Fromm
 
 ;; Author: Stephen Fromm
 ;; URL: https://github.com/sfromm/fle-mode
