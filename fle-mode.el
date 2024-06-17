@@ -135,9 +135,8 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 
 (defconst fle-supported-keywords-regex
   (regexp-opt
-   '("mycall" "mygrid" "operator" "qslmsg" "syn" "keyword"
-     "fle_header" "mywwff" "wwff" "mysota" "sota" "mypota"
-     "pota" "nickname") 'words)
+   '("mycall" "mygrid" "operator" "qslmsg" "nickname"
+     "mywwff" "wwff" "mysota" "sota" "mypota" "pota" ) 'words)
   "Regular expressions for FLE headers and keywords.")
 
 ;; For font-lock faces, see
