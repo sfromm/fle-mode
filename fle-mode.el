@@ -133,11 +133,12 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   (regexp-opt fle-supported-modes 'words)
   "Regular expressions for supported modes in FLE.")
 
-(defconst fle-supported-headers-regex
+(defconst fle-supported-keywords-regex
   (regexp-opt
    '("mycall" "mygrid" "operator" "qslmsg" "syn" "keyword"
-     "fle_header" "mywwff" "mysota" "mypota" "nickname") 'words)
-  "Regular expressions for FLE headers.")
+     "fle_header" "mywwff" "wwff" "mysota" "sota" "mypota"
+     "pota" "nickname") 'words)
+  "Regular expressions for FLE headers and keywords.")
 
 ;; For font-lock faces, see
 ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Faces-for-Font-Lock.html
@@ -149,7 +150,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
    (list fle-frequency-regex 0 font-lock-builtin-face)
    (list fle-supported-bands-regex 0 font-lock-type-face)
    (list fle-supported-modes-regex 0 font-lock-type-face)
-   (list fle-supported-headers-regex 0 font-lock-constant-face)
+   (list fle-supported-keywords-regex 0 font-lock-constant-face)
    (list fle-gridlocator-regex 0 font-lock-type-face)
    (list fle-callsign-regex 0 font-lock-keyword-face)
    (list fle-operator-regex 0 font-lock-string-face)
