@@ -157,7 +157,6 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
    (list fle-qso-remark-regex 0 font-lock-comment-face)
    (list fle-sota-regex 0 font-lock-builtin-face)
    (list fle-pota-regex 0 font-lock-builtin-face)
-   ()
    )
   "Font locking definitions for FLE mode.")
 
