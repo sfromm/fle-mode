@@ -210,11 +210,6 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   (interactive)
   (insert (completing-read "Band: " fle-supported-bands)))
 
-(defun fle-qrz-query-call ()
-  "Query QRZ for call-sign at point."
-  (interactive)
-  (browse-url (concat fle-qrz-query-url (thing-at-point 'word 'no-properties))))
-
 (defun fle-insert-mypota ()
   "Insert POTA Park identifier if not already set."
   (interactive)
@@ -226,10 +221,27 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
     (setq fle-mypota (read-string "POTA: "))
     (insert "mypota " fle-mypota "\n")))
 
+(defun fle-qrz-query-call ()
+  "Query QRZ for call-sign at point."
+  (interactive)
+  (browse-url (concat fle-qrz-query-url (thing-at-point 'word 'no-properties))))
+
 (defun fle-pota-query-park ()
   "Query POTA for park information."
   (interactive)
   (browse-url (concat fle-pota-park-url (thing-at-point 'symbol 'no-properties))))
+
+(defun fle-qso-prompt (call grid)
+  "Prompt for QSO details."
+  (interactive
+   (list
+    (read-string "Call: ")
+    (read-string "Grid: ")))
+  (unless (string= "" grid) (setq grid (concat " #" grid)))
+  (beginning-of-line)
+  (fle-insert-time)
+  (insert
+   (concat " " (upcase call) (upcase grid) "\n")))
 
 (defun fle-comment-pota-logfile-name ()
   "Insert comment with POTA log file name."
@@ -313,6 +325,14 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   "Submap for POTA-related commands")
 (fset 'fle-mode-pota-map fle-mode-pota-map)
 
+(defvar fle-mode-qso-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "q") 'fle-qso-prompt)
+    (define-key map (kbd "z") 'fle-qrz-query-call)
+    map)
+  "Submap for QSO-related commands")
+(fset 'fle-mode-qso-map fle-mode-qso-map)
+
 (defvar fle-mode-map
   (let ((map (make-sparse-keymap)))
     ;; these bindings are a work-in-progress to see what feels right.
@@ -320,7 +340,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
     (define-key map (kbd "C-c C-f t") 'fle-insert-time)
     (define-key map (kbd "C-c C-f b") 'fle-insert-band)
     (define-key map (kbd "C-c C-f m") 'fle-insert-mode)
-    (define-key map (kbd "C-c C-f q") 'fle-qrz-query-call)
+    (define-key map (kbd "C-c C-f q") 'fle-mode-qso-map)
     (define-key map (kbd "C-c C-f p") 'fle-mode-pota-map)
     map)
   "Keymap for fle-mode.")
