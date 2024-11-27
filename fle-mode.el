@@ -33,6 +33,7 @@
 
 ;; How to install with package-vc-install
 ;; (package-vc-install "https://github.com/sfromm/fle-mode")
+;; (progn (unload-feature 'fle-mode) (eval-buffer))
 
 ;;; Code:
 
@@ -53,8 +54,56 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   :group 'fle-mode
   :type 'string)
 
+(defgroup fle-faces nil
+  "Faces for highlighting text in FLE and related modes."
+  :prefix "fle-"
+  :group 'fle-mode)
+
+
 
-;; Constants
+;;; Faces
+(defface fle-callsign-face '((t (:inherit font-lock-keyword-face)))
+  "Face for callsigns in FLE and related modes."
+  :group 'fle-faces)
+
+(defface fle-op-frequency-face '((t (:inherit font-lock-builtin-face)))
+  "Face for operating frequency in FLE and related modes."
+  :group 'fle-faces)
+
+(defface fle-op-band-face '((t (:inherit font-lock-type-face)))
+  "Face for operating band in FLE and related modes."
+  :group 'fle-faces)
+
+(defface fle-op-mode-face '((t (:inherit font-lock-type-face)))
+  "Face for operating mode in FLE and related modes."
+  :group 'fle-faces)
+
+(defface fle-gridlocator-face '((t (:inherit font-lock-type-face)))
+  "Face for grid location in FLE and related modes."
+  :group 'fle-faces)
+
+(defface fle-pota-reference-face '((t (:inherit font-lock-builtin-face)))
+  "Face for POTA park reference in FLE and related modes."
+  :group 'fle-faces)
+
+(defface fle-sota-reference-face '((t (:inherit font-lock-builtin-face)))
+  "Face for SOTA reference in FLE and related modes."
+  :group 'fle-faces)
+
+(defface fle-keyword-face '((t (:inherit font-lock-constant-face)))
+  "Face for keywords FLE and related modes."
+  :group 'fle-faces)
+
+(defface fle-string-face '((t (:inherit font-lock-string-face)))
+  "Face for strings in FLE and related modes."
+  :group 'fle-faces)
+
+(defface fle-comment-face '((t (:inherit font-lock-comment-face)))
+  "Face for commented text in FLE and related modes."
+  :group 'fle-faces)
+
+
+;;; Constants
 
 (defconst fle-mode-version "0.5" "Version of `fle-mode'.")
 
@@ -139,24 +188,54 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
      "mywwff" "wwff" "mysota" "sota" "mypota" "pota" ) 'words)
   "Regular expressions for FLE headers and keywords.")
 
+(defvar fle-callsign-face 'fle-callsign-face
+  "Face for callsigns in FLE and related modes.")
+
+(defvar fle-op-frequency-face 'fle-op-frequency-face
+  "Face for operating frequency in FLE and related modes.")
+
+(defvar fle-op-band-face 'fle-op-band-face
+  "Face for operating band in FLE and related modes.")
+
+(defvar fle-op-mode-face 'fle-op-mode-face
+  "Face for operating mode in FLE and related modes.")
+
+(defvar fle-gridlocator-face 'fle-gridlocator-face
+  "Face for grid location in FLE and related modes.")
+
+(defvar fle-pota-reference-face 'fle-pota-reference-face
+  "Face for POTA park reference in FLE and related modes.")
+
+(defvar fle-sota-reference-face 'fle-sota-reference-face
+  "Face for SOTA reference in FLE and related modes.")
+
+(defvar fle-keyword-face 'fle-keyword-face
+  "Face for keywords FLE and related modes.")
+
+(defvar fle-string-face 'fle-string-face
+  "Face for strings in FLE and related modes.")
+
+(defvar fle-comment-face 'fle-comment-face
+  "Face for commented text in FLE and related modes.")
+
 ;; For font-lock faces, see
 ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Faces-for-Font-Lock.html
 (defvar fle-font-lock-keywords
   (list
-   (list fle-comment-regex 0 font-lock-comment-face)
+   (list fle-comment-regex 0 fle-comment-face)
    (list fle-date-regex 0 font-lock-string-face)
    (list fle-hour-min-regex 0 font-lock-string-face)
-   (list fle-frequency-regex 0 font-lock-builtin-face)
-   (list fle-supported-bands-regex 0 font-lock-type-face)
-   (list fle-supported-modes-regex 0 font-lock-type-face)
-   (list fle-supported-keywords-regex 0 font-lock-constant-face)
-   (list fle-gridlocator-regex 0 font-lock-type-face)
-   (list fle-callsign-regex 0 font-lock-keyword-face)
+   (list fle-frequency-regex 0 fle-op-frequency-face)
+   (list fle-supported-bands-regex 0 fle-op-band-face)
+   (list fle-supported-modes-regex 0 fle-op-mode-face)
+   (list fle-supported-keywords-regex 0 fle-keyword-face)
+   (list fle-gridlocator-regex 0 fle-gridlocator-face)
+   (list fle-callsign-regex 0 fle-callsign-face)
    (list fle-operator-regex 0 font-lock-string-face)
-   (list fle-qso-comment-regex 0 font-lock-string-face)
-   (list fle-qso-remark-regex 0 font-lock-comment-face)
-   (list fle-sota-regex 0 font-lock-builtin-face)
-   (list fle-pota-regex 0 font-lock-builtin-face)
+   (list fle-qso-comment-regex 0 fle-string-face)
+   (list fle-qso-remark-regex 0 fle-comment-face)
+   (list fle-sota-regex 0 fle-sota-reference-face)
+   (list fle-pota-regex 0 fle-pota-reference-face)
    )
   "Font locking definitions for FLE mode.")
 
@@ -173,7 +252,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   "URL to query QRZ for a call-sign.")
 
 
-;; Mode commands
+;;; Mode commands
 (defun fle-find-mycall ()
   "Find MYCALL and save in buffer variable."
   (interactive)
