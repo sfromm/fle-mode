@@ -174,6 +174,14 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
 
 
 ;; Mode commands
+(defun fle-find-mycall ()
+  "Find MYCALL and save in buffer variable."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (if (re-search-forward "^mycall " nil t)
+        (setq fle-mycall (thing-at-point 'symbol 'no-properties)))))
+
 (defun fle-find-mygrid ()
   "Find POTA park identifier and save in buffer variable."
   (interactive)
@@ -359,6 +367,8 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   (set (make-local-variable 'fle-mypota) nil)
   (setq imenu-case-fold-search nil)
   (set (make-local-variable 'imenu-generic-expression) fle-imenu-expression)
+  (fle-find-mycall)
+  (fle-find-mygrid)
   (fle-find-mypota)
   (imenu-add-to-menubar "Imenu"))
 
