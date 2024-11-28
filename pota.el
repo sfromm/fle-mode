@@ -6,7 +6,7 @@
 ;; URL: https://github.com/sfromm/fle-mode
 ;; Package-Requires: ((emacs "24.1"))
 ;; Keywords: fle pota
-;; Version: 0.5
+;; Version: 0.1
 
 ;; This program is not part of GNU Emacs
 ;;
@@ -236,7 +236,7 @@
             (when (pota--filter-qrt-p spot) (throw 'continue t))
             (unless (pota--filter-match-spot-p spot) (throw 'continue t))
             (insert
-             (format "%s  %-10s  %-10s  %-6s  %4s  %-8s  %-8s  %s\n"
+             (format "%s  %-10s  %-10s  %-6s  %4s  %-8s  %-6s  %s\n"
                      time
                      (propertize activator 'face 'fle-callsign-face)
                      (propertize frequency 'face 'fle-op-frequency-face)
@@ -274,9 +274,9 @@
   (hl-line-mode)
   (setf truncate-lines t
         header-line-format
-        (format "%s  %-10s  %-10s  %-6s  %4s  %-8s  %-8s  %s"
+        (format "%s%-10s  %-10s  %-6s  %4s  %4s  %-8s  %-6s  %s"
                 (propertize " " 'display '((space :align-to 0)))
-                "Time (UTC)" "Activator" "Frequency" "Mode" "Grid" "Reference" "Location" "Park")))
+                "Time (UTC)" "Activator" "Frequency" "Mode" "Grid" "Reference" "Region" "Park")))
 
 (defun pota ()
   "Display POTA spots."
