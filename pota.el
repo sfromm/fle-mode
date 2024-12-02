@@ -63,6 +63,11 @@
   :group 'fle-mode
   :type 'boolean)
 
+(defcustom pota-wait-for-refresh 60
+  "Whether to filter QRT stations."
+  :group 'fle-mode
+  :type 'integer)
+
 (defvar pota-filter-mode ""
   "Variable for what mode to filter by.")
 
@@ -72,9 +77,15 @@
 (defvar pota-filter-region ""
   "Variable for what region to filter by.")
 
+(defvar pota--spots-last-refresh nil
+  "Time when POTA spots were last refreshed.")
+
+(defvar pota--spots nil
+  "Current POTA activations.")
+
 
 ;;;
-(defun pota-get-activations ()
+(defun pota--json-query-api ()
   "Query POTA API for current activations.  Returns JSON object."
   (let ((json-object-type 'plist)
         (json-array-type 'list))
@@ -85,6 +96,17 @@
        (prog1
            (buffer-substring-no-properties (point) (point-max))
          (kill-buffer (current-buffer)))))))
+
+(defun pota-get-activations ()
+  "Return current activations from cache or get fresh spot information."
+  (unless pota--spots-last-refresh
+    (setq pota--spots-last-refresh (time-subtract (current-time) pota-wait-for-refresh)))
+  (when (<= pota-wait-for-refresh (float-time (time-subtract (current-time) pota--spots-last-refresh)))
+    (message "refreshing pota cache...")
+    (setq pota--spots (pota--json-query-api))
+    (setq pota--spots-last-refresh (current-time)))
+  pota--spots
+  )
 
 (defun pota-spot-data (reference frequency mode &optional comments)
   "Return JSON object representing a spot."
@@ -274,9 +296,17 @@
   (hl-line-mode)
   (setf truncate-lines t
         header-line-format
-        (format "%s%-10s  %-10s  %-6s  %4s  %4s  %-8s  %-6s  %s"
+        (format "%s%-10s  %-10s  %-6s  %4s  %4s  %-8s  %-6s  %s  %s"
                 (propertize " " 'display '((space :align-to 0)))
-                "Time (UTC)" "Activator" "Frequency" "Mode" "Grid" "Reference" "Region" "Park")))
+                "Time (UTC)" "Activator"
+                "Frequency" "Mode"
+                "Grid" "Reference"
+                "Region" "Park"
+                (concat "Fetched "
+                        (if pota--spots-last-refresh
+                            (format-time-string "%a %H:%M" pota--spots-last-refresh)
+                          "now."))
+                )))
 
 (defun pota ()
   "Display POTA spots."
