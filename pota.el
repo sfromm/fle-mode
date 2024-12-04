@@ -68,6 +68,8 @@
   :group 'fle-mode
   :type 'integer)
 
+(defconst pota-mode-version "0.1" "Version of `pota-mode'.")
+
 (defvar pota-filter-mode ""
   "Variable for what mode to filter by.")
 
@@ -307,6 +309,12 @@
                             (format-time-string "%a %H:%M" pota--spots-last-refresh)
                           "now."))
                 )))
+
+(defun pota-mode-version ()
+  "Display version of `pota-mode'."
+  (interactive)
+  (message "pota %s" pota-mode-version)
+  pota-mode-version)
 
 (defun pota ()
   "Display POTA spots."
