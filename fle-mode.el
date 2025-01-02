@@ -78,7 +78,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   "Face for operating mode in FLE and related modes."
   :group 'fle-faces)
 
-(defface fle-gridlocator-face '((t (:inherit font-lock-type-face)))
+(defface fle-gridlocator-face '((t (:inherit (bold font-lock-type-face))))
   "Face for grid location in FLE and related modes."
   :group 'fle-faces)
 
