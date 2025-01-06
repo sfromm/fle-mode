@@ -277,6 +277,16 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
     (if (re-search-forward "^mypota " nil t)
         (setq fle-mypota (thing-at-point 'symbol 'no-properties)))))
 
+(defun fle-init-log ()
+  "Initialize log with standard boilerplate."
+  (interactive)
+  (insert "mycall " fle-mycall "\n")
+  (insert "operator " fle-mycall "\n")
+  (insert "# mygrid\n")
+  (insert "# mypota\n")
+  (fle-insert-date) (insert " ") (fle-insert-time)
+  (insert "\n"))
+
 (defun fle-insert-date ()
   "Insert today's date in expected format."
   (interactive)
