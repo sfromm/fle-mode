@@ -262,7 +262,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
         (setq fle-mycall (thing-at-point 'symbol 'no-properties)))))
 
 (defun fle-find-mygrid ()
-  "Find POTA park identifier and save in buffer variable."
+  "Find Gridsquare identifier and save in buffer variable."
   (interactive)
   (save-excursion
     (goto-char (point-min))
@@ -306,6 +306,17 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   "Insert operating band."
   (interactive)
   (insert (completing-read "Band: " fle-supported-bands)))
+
+(defun fle-insert-mygrid ()
+  "Insert grid location identifier if not already set."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (when (re-search-forward (rx bol (0+ "# ") "mygrid") nil t)
+      (beginning-of-line)
+      (kill-line))
+    (setq fle-mygrid (upcase (read-string "Gridsquare: ")))
+    (insert "mygrid " fle-mygrid "\n")))
 
 (defun fle-insert-mypota ()
   "Insert POTA Park identifier if not already set."
