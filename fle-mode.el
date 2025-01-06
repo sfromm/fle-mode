@@ -323,7 +323,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   (interactive)
   (save-excursion
     (goto-char (point-min))
-    (when (re-search-forward "^mypota " nil t)
+    (when (re-search-forward (rx bol (0+ "# ") "mypota") nil t)
       (beginning-of-line)
       (kill-line))
     (setq fle-mypota (read-string "POTA: "))
