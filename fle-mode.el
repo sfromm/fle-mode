@@ -358,7 +358,7 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
    (concat "# "
            fle-mycall
            "@"
-           fle-mypota
+           (if fle-mypota fle-mypota "QTH")
            "_"
            (format-time-string "%Y%m%d" (current-time) t)
            "\n")))
