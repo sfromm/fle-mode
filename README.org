@@ -71,6 +71,12 @@ The following is not intended to replace the [[https://df3cb.com/fle/documentati
 - QSL messages must be embedded in square brackets =[ ]=.
 - Remarks can be embedded in curly braces ={ }=.  /Remarks are not exported to ADIF/.
 - Remarks  can also be set in lines that begin with a =#=.
+* Current space weather
+#+begin_src restclient
+GET https://kp.gfz-potsdam.de/app/json/?start=2025-01-01T00:00:00Z&end=2025-01-01T23:59:59Z&index=Kp
+#
+GET https://kp.gfz-potsdam.de/app/json/?start=2025-01-02T00:00:00Z&end=2025-01-02T23:59:59Z&index=Kp
+#+end_src
 * Future goals
 
 - More fine-tuning of regular expressions.
