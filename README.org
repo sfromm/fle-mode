@@ -8,9 +8,9 @@ This is Emacs package intended to support [[https://df3cb.com/fle/][Fast Log Ent
 You can either clone this repository and add it your ~load-path~ or use something like /Quelpa/ or /Straight/ to add to your configuration.  The following is one example.
 
 #+begin_src emacs-lisp
-(use-package fle-mode
-  :straight (fle-mode :type git :host github :repo "sfromm/fle-mode")
-  :commands (fle-mode))
+(use-package ham
+  :straight (ham :type git :host github :repo "sfromm/ham-el")
+  :commands (fle-mode pota))
 #+end_src
 
 * ~fle-mode~
