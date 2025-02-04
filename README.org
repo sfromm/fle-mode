@@ -1,10 +1,7 @@
-#+TITLE: Emacs mode for FLE amateur radio logging files
+#+TITLE: Emacs modes for Amateur Radio
 
-This is Emacs package intended to support [[https://df3cb.com/fle/][Fast Log Entry]] (FLE) text files. The text format is [[https://df3cb.com/fle/documentation/][documented]] online.  Users can optionally use [[https://github.com/on4kjm/FLEcli][FLEcli]] to process FLE formatted files and upload to the user's preferred destination.
+This is Emacs package intended to support [[https://df3cb.com/fle/][Fast Log Entry]] (FLE) text files, [[https://parksontheair.com][Parks on the Air]], and other activities.
 
-* fle-mode
-
-This provides font-lock highlighting for FLE files and rudimentary support for navigation via [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html#Imenu][Imenu]].
 
 * Installation
 
@@ -16,7 +13,13 @@ You can either clone this repository and add it your ~load-path~ or use somethin
   :commands (fle-mode))
 #+end_src
 
-* Supported features and commands
+* ~fle-mode~
+
+The FLE text format is [[https://df3cb.com/fle/documentation/][documented]] online.  Users can optionally use [[https://github.com/on4kjm/FLEcli][FLEcli]] to process FLE formatted files and upload to the user's preferred destination.
+
+This provides font-lock highlighting for FLE files and rudimentary support for navigation via [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html#Imenu][Imenu]].
+
+** Supported features and commands
 
 - Syntax highlighting
 - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html][Imenu]] support for Date and Band sections.
@@ -24,7 +27,7 @@ You can either clone this repository and add it your ~load-path~ or use somethin
 - Completing read support for band and mode.
 - Commands and Keybindings to insert date and time in UTC.
 
-** Keybinding map
+*** Keybinding map
 
 | Keybinding  | Command                       |
 |-------------+-------------------------------|
@@ -36,7 +39,7 @@ You can either clone this repository and add it your ~load-path~ or use somethin
 | C-C C-f p p | fle-insert-mypota             |
 | C-C C-f p n | fle-comment-pota-logfile-name |
 
-* Workflows
+** Workflows
 
 This is currently intended to be a way to support logging of amateur radio contacts and generating
 [[https://adif.org/][ADIF]] (Amateur Data Interchange Format) logs that can be submitted to online log-books.
@@ -51,11 +54,11 @@ This is currently intended to be a way to support logging of amateur radio conta
 - When done logging, invoke =M-x fle-flecli-gen-adif= or =M-x fle-flecli-gen-adif-pota= to generate an ADIF log.
   + If you are keeping the log in a source block in an Org buffer, be sure to use the =:tangle= header so the contents are tangled to a file.
 
-* FLE keywords
+** FLE keywords
 
 The following is not intended to replace the [[https://df3cb.com/fle/documentation/][documentation]] maintained by DF3CB.
 
-** Header section
+*** Header section
 - *mycall*
 - *mygrid*
 - *operator*
@@ -64,13 +67,30 @@ The following is not intended to replace the [[https://df3cb.com/fle/documentati
 - *mysota*
 - *mypota*
 - *nickname*
-** Optional information
+*** Optional information
 - QSO comments must be embedded in brackets =< >=.
 - The QSO partner's name must have a preceding =@=.
 - Grid locators must have a preceding =#=.
 - QSL messages must be embedded in square brackets =[ ]=.
 - Remarks can be embedded in curly braces ={ }=.  /Remarks are not exported to ADIF/.
 - Remarks  can also be set in lines that begin with a =#=.
+
+** FLE parser and export to ADIF
+
+There are two functions for parsing FLE logs: ~fle-parse-fle-path~ and ~fle-parse-fle-buffer~.  The goal is to build a FLE to ADIF export so that a log can exported.
+
+Known current limitations:
+
+1. Both sent and received RST report need to be defined.  The official version of FLE only requires the sent to be define.
+2. Does not recognize the =day+= or =day++= syntax.
+3. Time syntax needs to be =HHMM=; does not recognize =MM= syntax.
+4. This does not support interpolated log times for QSOs.  Time must be entered for every QSO.
+5. Does not put in frequency for digital modes where there is an established operating frequency (eg. FT8, FT4).
+6. Probably lots of other things
+
+* ~pota~
+Use =M-x pota= to see real-time spotting information.  Allows for filtering based on band or mode.
+
 * Current space weather
 #+begin_src restclient
 GET https://kp.gfz-potsdam.de/app/json/?start=2025-01-01T00:00:00Z&end=2025-01-01T23:59:59Z&index=Kp

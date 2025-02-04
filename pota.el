@@ -37,6 +37,7 @@
 
 ;;; Code:
 
+(require 'ham)
 (require 'fle-mode)
 (require 'url)
 (require 'json)
@@ -44,31 +45,31 @@
 (defcustom pota-spot-api-url
   "https://api.pota.app/spot"
   "URL to query POTA for current activations."
-  :group 'fle-mode
+  :group 'ham
   :type 'string)
 
 (defcustom pota-activator-api-url
   "https://api.pota.app/spot/activator"
   "URL to query POTA for current activations."
-  :group 'fle-mode
+  :group 'ham
   :type 'string)
 
 (defcustom pota-buffer-name "*POTA Active Spots*"
   "Name of POTA Spots buffer."
-  :group 'fle-mode
+  :group 'ham
   :type 'string)
 
 (defcustom pota-filter-qrt t
   "Whether to filter QRT stations."
-  :group 'fle-mode
+  :group 'ham
   :type 'boolean)
 
 (defcustom pota-wait-for-refresh 60
   "Whether to filter QRT stations."
-  :group 'fle-mode
+  :group 'ham
   :type 'integer)
 
-(defconst pota-mode-version "0.1" "Version of `pota-mode'.")
+(defconst pota-mode-version "0.2" "Version of `pota-mode'.")
 
 (defvar pota-filter-mode ""
   "Variable for what mode to filter by.")
@@ -134,46 +135,12 @@
                       (downcase (plist-get spot :comments)))
     pota-filter-qrt))
 
-(defun pota-frequency-to-band (f)
-  "Convert frequency F to a corresponding band."
-  (cond
-   ((and (>= f 130) (<= f 140) "2190m"))
-   ((and (>= f 450) (<= f 505) "630m"))
-   ((and (>= f 500) (<= f 505) "560m"))
-   ((and (>= f 1700) (<= f 2100) "160m"))
-   ((and (>= f 3400) (<= f 4100) "80m"))
-   ((and (>= f 5300) (<= f 5500) "60m"))
-   ((and (>= f 6900) (<= f 7400) "40m"))
-   ((and (>= f 10000) (<= f 10200) "30m"))
-   ((and (>= f 13900) (<= f 14400) "20m"))
-   ((and (>= f 18000) (<= f 18200) "17m"))
-   ((and (>= f 20900) (<= f 21600) "15m"))
-   ((and (>= f 24500) (<= f 25200) "12m"))
-   ((and (>= f 27900) (<= f 30000) "10m"))
-   ((and (>= f 50000) (<= f 54000) "6m"))
-   ((and (>= f 70000) (<= f 71000) "4m"))
-   ((and (>= f 140000) (<= f 150000) "2m"))
-   ((and (>= f 219000) (<= f 230000) "1.25m"))
-   ((and (>= f 400000) (<= f 460000) "70cm"))
-   ((and (>= f 900000) (<= f 930000) "33cm"))
-   ((and (>= f 1180000) (<= f 1420000) "23cm"))
-   ((and (>= f 2300000) (<= f 2450000) "13cm"))
-   ((and (>= f 3290000) (<= f 3510000) "9cm"))
-   ((and (>= f 5640000) (<= f 5926000) "6cm"))
-   ((and (>= f 10000000) (<= f 10500000) "3cm"))
-   ((and (>= f 24000000) (<= f 24250000) "1.25cm"))
-   ((and (>= f 47000000) (<= f 47200000) "6mm"))
-   ((and (>= f 75000000) (<= f 81000000) "4mm"))
-   ((and (>= f 122250000) (<= f 123000000) "2.5mm"))
-   ((and (>= f 134000000) (<= f 141000000) "2mm"))
-   ((and (>= f 241000000) (<= f 250000000) "1mm"))))
-
 (defun pota--filter-match-band-p (spot)
   "Filter SPOT based on band."
   (if (string= "" pota-filter-band) t
     (string-match-p
      (regexp-quote pota-filter-band)
-     (pota-frequency-to-band (string-to-number (plist-get spot :frequency))))))
+     (ham-frequency-to-band (string-to-number (plist-get spot :frequency))))))
 
 (defun pota--filter-match-mode-p (spot)
   "Predicate to filter SPOT based on mode."
@@ -204,13 +171,13 @@
 (defun pota-filter-by-band ()
   "Filter POTA spots by band."
   (interactive)
-  (setq pota-filter-band (completing-read "Band: " fle-supported-bands))
+  (setq pota-filter-band (completing-read "Band: " ham-supported-bands))
   (pota-spots-refresh))
 
 (defun pota-filter-by-mode ()
   "Filter POTA spots by mode."
   (interactive)
-  (setq pota-filter-mode (completing-read "Mode: " fle-supported-modes))
+  (setq pota-filter-mode (completing-read "Mode: " ham-supported-modes))
   (pota-spots-refresh))
 
 (defun pota-filter-by-region ()
@@ -292,7 +259,7 @@
 
 (define-derived-mode pota-mode special-mode "POTA"
   "Major mode for interacting with POTA."
-  :group 'fle-mode
+  :group 'ham
   (use-local-map pota-mode-map)
   (set (make-local-variable 'pota-current-regions) '())
   (hl-line-mode)
@@ -313,7 +280,7 @@
 (defun pota-mode-version ()
   "Display version of `pota-mode'."
   (interactive)
-  (message "pota %s" pota-mode-version)
+  (message "pota %s; ham-el %s" pota-mode-version ham-el-version)
   pota-mode-version)
 
 (defun pota ()
