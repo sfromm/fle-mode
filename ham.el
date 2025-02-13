@@ -36,6 +36,31 @@
 Group of modes and helpers for operating an amateur radio."
   :group 'comm)
 
+(defgroup spacewx nil
+  "Space Weather Mode.
+Mode for collecting space weather data."
+  :group 'ham)
+
+(defcustom ham-spacewx-potsdam-kp-api-url
+  "https://kp.gfz-potsdam.de/app/json/?"
+  "GFZ Potsdam URL to query space weather information."
+  :group 'spacewx
+  :type 'string)
+
+(defcustom ham-spacewx-noaa-swpc-kp-url
+  "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json"
+  "NOAA URL to query space weather information."
+  :group 'spacewx
+  :type 'string)
+
+(defcustom ham-spacewx-kp-hour-cutoff
+  "Hour of the day to cutoff to determine what date to use for Kp lookup."
+  6
+  :type 'int)
+
+
+;;; Constants
+
 (defconst ham-el-version "0.6" "Version of `ham-el'.")
 
 (defconst ham-supported-bands
@@ -51,6 +76,31 @@ Group of modes and helpers for operating an amateur radio."
     "OPERA" "PAC" "PAX" "PKT" "PSK2K" "Q15" "QRA64" "ROS" "RTTYM" "SSTV" "T10"
     "THOR" "THRB" "TOR" "V4" "VOI" "WINMOR" "WSPR")
   "Supported amateur radio modes.")
+
+(defconst ham-spacewx-potsdam-kp-api-url
+  "https://kp.gfz-potsdam.de/app/json/?"
+  "GFZ Potsdam URL to query space weather information.")
+
+(defconst ham-spacewx-noaa-swpc-kp-url
+  "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json")
+
+
+;;; Helpers
+
+(defun ham-rest-query (url)
+  "Do REST query against URL and return results."
+  (let ((json-object-type 'plist)
+        (json-array-type 'list))
+    (json-read-from-string
+     (with-current-buffer (url-retrieve-synchronously url)
+       (goto-char (point-min-marker))
+       (re-search-forward "^$")
+       (prog1
+           (buffer-substring-no-properties (point) (point-max))
+         (kill-buffer (current-buffer)))))))
+
+
+;;; Functions - frequency and band
 
 (defun ham-frequency-to-band (f)
   "Convert frequency F to a corresponding band."
@@ -138,6 +188,64 @@ Only useful for certain digital modes."
                         "QRA64" "T10" "WSPR")) "-10")
         (t "59")))
 
+
+;;; utilities
+
+(defun ham--rest-query (url)
+  "Do REST query against url and return results."
+  (let ((json-object-type 'plist)
+        (json-array-type 'list))
+    (json-read-from-string
+     (with-current-buffer (url-retrieve-synchronously url)
+       (goto-char (point-min-marker))
+       (re-search-forward "^$")
+       (prog1
+           (buffer-substring-no-properties (point) (point-max))
+         (kill-buffer (current-buffer)))))))
+
+
+;;; spacewx
+
+(defun ham--get-lookup-date ()
+  "Return date string to use for lookup of index values."
+  (let ((now-hour (format-time-string "%H" (current-time) t)))
+    (if (>= ham-spacewx-kp-hour-cutoff (string-to-number now-hour))
+        (format-time-string "%Y-%m-%d"
+                            (time-subtract (current-time) (days-to-time 1)) t)
+      (format-time-string "%Y-%m-%d" (current-time) t))))
+
+(defun ham-spacewx-get-noaa-swpc-kp-values ()
+  (let ((kpvals nil)
+        (observations (cdr (ham--rest-query ham-spacewx-noaa-swpc-kp-url))))
+    (dolist (vals observations)
+      (push (nth 1 vals) kpvals))
+    (reverse kpvals)))
+
+(defun ham-spacewx-get-noaa-swpc-ap-values ()
+  (let ((apvals nil)
+        (observations (cdr (ham--rest-query ham-spacewx-noaa-swpc-kp-url))))
+    (dolist (vals observations)
+      (push (nth 2 vals) apvals))
+    (reverse apvals)))
+
+(defun ham-spacewx-get-last-kp-value ()
+  "Query GFZ Potsdam for current Kp index."
+  (car (last (ham-spacewx-get-noaa-swpc-kp-values))))
+
+(defun ham-spacewx-get-last-ap-value ()
+  "Query GFZ Potsdam for current Kp index."
+  (car (last (ham-spacewx-get-noaa-swpc-ap-values))))
+
+(defun ham-spacewx ()
+  "Return current spacewx as an alist."
+  (let ((kindex (ham-spacewx-get-last-kp-value))
+        (aindex (ham-spacewx-get-last-ap-value))
+        (sunspots nil)
+        (solarflux nil))
+    (list (list 'kindex kindex)
+          (list 'aindex aindex)
+          (list 'sunspots sunspots)
+          (list 'solarflux solarflux))))
 
 (provide 'ham)
 

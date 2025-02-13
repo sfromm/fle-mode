@@ -90,15 +90,7 @@
 ;;;
 (defun pota--json-query-api ()
   "Query POTA API for current activations.  Returns JSON object."
-  (let ((json-object-type 'plist)
-        (json-array-type 'list))
-    (json-read-from-string
-     (with-current-buffer (url-retrieve-synchronously pota-activator-api-url)
-       (goto-char (point-min-marker))
-       (re-search-forward "^$")
-       (prog1
-           (buffer-substring-no-properties (point) (point-max))
-         (kill-buffer (current-buffer)))))))
+  (ham--rest-query pota-activator-api-url))
 
 (defun pota-get-activations ()
   "Return current activations from cache or get fresh spot information."
