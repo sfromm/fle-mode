@@ -3,10 +3,10 @@
 ;; Copyright (C) 2023, 2024, 2025 Stephen Fromm
 
 ;; Author: Stephen Fromm
-;; URL: https://github.com/sfromm/fle-mode
-;; Package-Requires: ((emacs "24.1"))
-;; Keywords: fle
-;; Version: 0.6
+;; URL: https://github.com/sfromm/ham-el
+;; Version: 0.7
+;; Package-Requires: ((emacs "24.1") (ham "0.6"))
+;; Keywords: fle, ham, amateur, radio
 
 ;; This program is not part of GNU Emacs
 ;;

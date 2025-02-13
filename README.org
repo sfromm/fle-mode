@@ -96,6 +96,8 @@ Use =M-x pota= to see real-time spotting information.  Allows for filtering base
 GET https://kp.gfz-potsdam.de/app/json/?start=2025-01-01T00:00:00Z&end=2025-01-01T23:59:59Z&index=Kp
 #
 GET https://kp.gfz-potsdam.de/app/json/?start=2025-01-02T00:00:00Z&end=2025-01-02T23:59:59Z&index=Kp
+#
+GET https://services.swpc.noaa.gov/json/sunspot_report.json
 #+end_src
 * Future goals
 

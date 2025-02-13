@@ -1,12 +1,12 @@
 ;;; pota.el --- Mode to hunt and spot for POTA activity -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024 Stephen Fromm
+;; Copyright (C) 2024, 2025 Stephen Fromm
 
 ;; Author: Stephen Fromm
-;; URL: https://github.com/sfromm/fle-mode
-;; Package-Requires: ((emacs "24.1"))
-;; Keywords: fle pota
-;; Version: 0.1
+;; URL: https://github.com/sfromm/ham-el
+;; Version: 0.7
+;; Package-Requires: ((emacs "24.1") (ham "0.6"))
+;; Keywords: pota, ham, amateur, radio
 
 ;; This program is not part of GNU Emacs
 ;;
