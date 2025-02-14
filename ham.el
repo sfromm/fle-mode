@@ -41,18 +41,6 @@ Group of modes and helpers for operating an amateur radio."
 Mode for collecting space weather data."
   :group 'ham)
 
-(defcustom ham-spacewx-potsdam-kp-api-url
-  "https://kp.gfz-potsdam.de/app/json/?"
-  "GFZ Potsdam URL to query space weather information."
-  :group 'spacewx
-  :type 'string)
-
-(defcustom ham-spacewx-noaa-swpc-kp-url
-  "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json"
-  "NOAA URL to query space weather information."
-  :group 'spacewx
-  :type 'string)
-
 (defcustom ham-spacewx-kp-hour-cutoff
   "Hour of the day to cutoff to determine what date to use for Kp lookup."
   6
@@ -82,22 +70,20 @@ Mode for collecting space weather data."
   "GFZ Potsdam URL to query space weather information.")
 
 (defconst ham-spacewx-noaa-swpc-kp-url
-  "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json")
+  "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json"
+  "NOAA URL to query space weather information.
+For more information, see https://www.swpc.noaa.gov/products/planetary-k-index.")
 
-
-;;; Helpers
+(defconst ham-spacewx-noaa-swpc-wwv-url
+  "https://services.swpc.noaa.gov/text/wwv.txt"
+  "NOAA URL to query WWV space weather information.
+For more information, see https://www.swpc.noaa.gov/products/geophysical-alert-wwv-text.")
 
-(defun ham-rest-query (url)
-  "Do REST query against URL and return results."
-  (let ((json-object-type 'plist)
-        (json-array-type 'list))
-    (json-read-from-string
-     (with-current-buffer (url-retrieve-synchronously url)
-       (goto-char (point-min-marker))
-       (re-search-forward "^$")
-       (prog1
-           (buffer-substring-no-properties (point) (point-max))
-         (kill-buffer (current-buffer)))))))
+(defconst ham-spacewx-silso-current-url
+  "https://www.sidc.be/SILSO/DATA/EISN/EISN_current.txt"
+  "URL for Royal Observatory of Belgium Sunspot Index and Long-term Solar Observations.
+For more information, see https://www.sidc.be/SILSO/home.")
+
 
 
 ;;; Functions - frequency and band
@@ -215,6 +201,7 @@ Only useful for certain digital modes."
       (format-time-string "%Y-%m-%d" (current-time) t))))
 
 (defun ham-spacewx-get-noaa-swpc-kp-values ()
+  "Return Kp values from NOAA SWPC."
   (let ((kpvals nil)
         (observations (cdr (ham--rest-query ham-spacewx-noaa-swpc-kp-url))))
     (dolist (vals observations)
@@ -222,26 +209,63 @@ Only useful for certain digital modes."
     (reverse kpvals)))
 
 (defun ham-spacewx-get-noaa-swpc-ap-values ()
+  "Return Ap values from NOAA SWPC."
   (let ((apvals nil)
         (observations (cdr (ham--rest-query ham-spacewx-noaa-swpc-kp-url))))
     (dolist (vals observations)
       (push (nth 2 vals) apvals))
     (reverse apvals)))
 
+(defun ham-spacewx-noaa-swpc-solar-flux ()
+  "Return WWV values from NOAA SWPC."
+  (let ((solarflux nil))
+    (with-current-buffer (url-retrieve-synchronously ham-spacewx-noaa-swpc-wwv-url)
+      (goto-char (point-min-marker))
+      (re-search-forward "^Solar flux")
+      (setq solarflux (nth 0 (split-string (buffer-substring-no-properties (point) (line-end-position)))))
+      solarflux)))
+
+(defun ham--spacewx-sidc-silso-values ()
+  "Return SILSO sunspot values from SIDC."
+  (let ((sunspots nil)
+        (measurement nil)
+        (date nil)
+        (sn nil))
+    (with-current-buffer (url-retrieve-synchronously ham-spacewx-silso-current-url)
+      (goto-char (point-min-marker))
+      (re-search-forward "^$")
+      (forward-line)
+      (while (not (eobp))
+        (let* ((line (substring (thing-at-point 'line t) 0 -1))
+               (parts (split-string line)))
+          (setq sn (nth 4 parts))
+          (setq date (concat (nth 0 parts) "-" (nth 1 parts) "-" (nth 2 parts)))
+          (setq measurement (list date sn))
+          (push measurement sunspots))
+        (forward-line))
+      (reverse sunspots))))
+
 (defun ham-spacewx-get-last-kp-value ()
-  "Query GFZ Potsdam for current Kp index."
+  "Query for most current Kp index."
   (car (last (ham-spacewx-get-noaa-swpc-kp-values))))
 
 (defun ham-spacewx-get-last-ap-value ()
-  "Query GFZ Potsdam for current Kp index."
+  "Query for most recent Kp index."
+  (interactive)
   (car (last (ham-spacewx-get-noaa-swpc-ap-values))))
+
+(defun ham-spacewx-get-last-sunspot-value ()
+  "Query for last sunspot measurement."
+  (interactive)
+  (cadr (car (last (ham--spacewx-sidc-silso-values)))))
 
 (defun ham-spacewx ()
   "Return current spacewx as an alist."
+  (interactive)
   (let ((kindex (ham-spacewx-get-last-kp-value))
         (aindex (ham-spacewx-get-last-ap-value))
-        (sunspots nil)
-        (solarflux nil))
+        (sunspots (ham-spacewx-get-last-sunspot-value))
+        (solarflux (ham-spacewx-noaa-swpc-solar-flux)))
     (list (list 'kindex kindex)
           (list 'aindex aindex)
           (list 'sunspots sunspots)

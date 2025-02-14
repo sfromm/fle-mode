@@ -367,6 +367,18 @@ Mode for editing FLE (fast-log-entry) amatuer radio logging files."
   (insert
    (concat " " (upcase call) (upcase grid) "\n")))
 
+(defun fle-comment-spacewx ()
+  "Insert comment with space weather conditions."
+  (interactive)
+  (let ((spacewx (ham-spacewx)))
+    (insert
+     (concat "# "
+             "kindex " (cadr (assoc 'kindex spacewx)) "; "
+             "aindex " (cadr (assoc 'aindex spacewx)) "; "
+             "solarflux " (cadr (assoc 'solarflux spacewx)) "; "
+             "sunspots " (cadr (assoc 'sunspots spacewx))))))
+
+
 (defun fle-comment-pota-logfile-name ()
   "Insert comment with POTA log file name."
   (interactive)
