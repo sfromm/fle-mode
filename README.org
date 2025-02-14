@@ -97,7 +97,11 @@ GET https://kp.gfz-potsdam.de/app/json/?start=2025-01-01T00:00:00Z&end=2025-01-0
 #
 GET https://kp.gfz-potsdam.de/app/json/?start=2025-01-02T00:00:00Z&end=2025-01-02T23:59:59Z&index=Kp
 #
+GET https://kp.gfz-potsdam.de/app/files/Kp_ap_Ap_SN_F107_nowcast.txt
+#
 GET https://services.swpc.noaa.gov/json/sunspot_report.json
+#
+GET https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json
 #+end_src
 * Future goals
 
